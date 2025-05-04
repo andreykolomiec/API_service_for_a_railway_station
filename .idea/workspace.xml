@@ -5,14 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="4385b5af-fffd-43f9-b626-1e9a13920379" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/railway_station/serializers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/railway_station/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/API_service_for_a_railway_station.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/API_service_for_a_railway_station.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/railway_service/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/railway_service/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/railway_service/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/railway_service/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/railway_station/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/railway_station/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/railway_station/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/railway_station/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,7 +97,7 @@
       <option name="presentableId" value="Default" />
       <updated>1745962672038</updated>
       <workItem from="1745962673136" duration="32108000" />
-      <workItem from="1746297386299" duration="7620000" />
+      <workItem from="1746297386299" duration="8271000" />
     </task>
     <servers />
   </component>

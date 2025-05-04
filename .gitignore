@@ -1,4 +1,31 @@
-.idea/
-venv/
+# Byte-compiled / optimized / DLL files
 __pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+ENV/
+env/
+
+# Django migrations except __init__.py
+**/migrations/
+!**/migrations/__init__.py
+
+# Database
 db.sqlite3
+
+# Media & Static files
+/media/
+staticfiles/
+*.log
+
+# PyCharm project settings (optional: ignore all .idea/)
+.idea/
+
+# VSCode settings
+.vscode/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
