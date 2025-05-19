@@ -153,7 +153,7 @@ class Ticket(models.Model):
             )
 
     def clean(self):
-        # train = self.journey.train
+
         Ticket.validate_seat(self.seat, self.journey.train.place_in_cargo, ValueError)
         Ticket.validate_cargo(self.cargo, self.journey.train.cargo_num, ValueError)
 
