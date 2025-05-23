@@ -4,6 +4,7 @@ import uuid
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.text import slugify
+
 from railway_service import settings
 
 
@@ -18,7 +19,9 @@ class TrainType(models.Model):
 
 
 def train_image_path(instance: "Train", filename: str) -> pathlib.Path:
-    filename = f"{ slugify (instance.name)} - {uuid.uuid4()}" + pathlib.Path(filename).suffix
+    filename = (
+        f"{ slugify (instance.name)} - {uuid.uuid4()}" + pathlib.Path(filename).suffix
+    )
     return pathlib.Path("uploads/train/") / pathlib.Path(filename)
 
 
@@ -26,7 +29,9 @@ class Train(models.Model):
     name = models.CharField(max_length=100)
     cargo_num = models.IntegerField(validators=[MinValueValidator(1)])
     place_in_cargo = models.IntegerField(validators=[MinValueValidator(1)])
-    train_type = models.ForeignKey(TrainType, related_name="trains", on_delete=models.CASCADE)
+    train_type = models.ForeignKey(
+        TrainType, related_name="trains", on_delete=models.CASCADE
+    )
     image = models.ImageField(null=True, upload_to=train_image_path)
 
     class Meta:
@@ -53,8 +58,12 @@ class Station(models.Model):
 
 
 class Route(models.Model):
-    source = models.ForeignKey(Station, on_delete=models.CASCADE, related_name="routes_from")
-    destination = models.ForeignKey(Station, on_delete=models.CASCADE, related_name="routes_to")
+    source = models.ForeignKey(
+        Station, on_delete=models.CASCADE, related_name="routes_from"
+    )
+    destination = models.ForeignKey(
+        Station, on_delete=models.CASCADE, related_name="routes_to"
+    )
     distance = models.IntegerField()
 
     class Meta:
@@ -76,15 +85,17 @@ class Journey(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=["route", "train"]),
-            models.Index(fields=["departure_time", "arrival_time"])
+            models.Index(fields=["departure_time", "arrival_time"]),
         ]
         ordering = ["-departure_time"]
 
     def __str__(self):
-        return (f" rout: {self.route},"
-                f" train: {self.train}"
-                f" (departure: {self.departure_time},"
-                f" arrival: {self.arrival_time})")
+        return (
+            f" rout: {self.route},"
+            f" train: {self.train}"
+            f" (departure: {self.departure_time},"
+            f" arrival: {self.arrival_time})"
+        )
 
 
 class Crew(models.Model):
@@ -123,7 +134,9 @@ class Order(models.Model):
 class Ticket(models.Model):
     cargo = models.IntegerField(validators=[MinValueValidator(1)])
     seat = models.IntegerField(validators=[MinValueValidator(1)])
-    journey = models.ForeignKey(Journey, on_delete=models.CASCADE, related_name="tickets")
+    journey = models.ForeignKey(
+        Journey, on_delete=models.CASCADE, related_name="tickets"
+    )
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="tickets")
 
     class Meta:
@@ -147,9 +160,7 @@ class Ticket(models.Model):
     def validate_cargo(cargo: int, cargo_num: int, error_to_rais):
         if not (1 <= cargo <= cargo_num):
             raise error_to_rais(
-                {
-                    "cargo": f"cargo must be in the range [1, {cargo_num}], not {cargo}"
-                }
+                {"cargo": f"cargo must be in the range [1, {cargo_num}], not {cargo}"}
             )
 
     def clean(self):
@@ -157,6 +168,15 @@ class Ticket(models.Model):
         Ticket.validate_seat(self.seat, self.journey.train.place_in_cargo, ValueError)
         Ticket.validate_cargo(self.cargo, self.journey.train.cargo_num, ValueError)
 
-    def save(self, *args, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(
+        self,
+        *args,
+        force_insert=False,
+        force_update=False,
+        using=None,
+        update_fields=None,
+    ):
         self.full_clean()
-        return super(Ticket, self).save(force_insert, force_update, using, update_fields)
+        return super(Ticket, self).save(
+            force_insert, force_update, using, update_fields
+        )
