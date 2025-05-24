@@ -1,7 +1,16 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from railway_station.models import Train, TrainType, Route, Station, Crew, Journey, Ticket, Order
+from railway_station.models import (
+    Crew,
+    Journey,
+    Order,
+    Route,
+    Station,
+    Ticket,
+    Train,
+    TrainType,
+)
 
 
 class TrainTypeSerializer(serializers.ModelSerializer):
@@ -16,21 +25,12 @@ class TrainSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Train
-        fields = (
-            "id",
-            "name",
-            "cargo_num",
-            "place_in_cargo",
-            "train_type",
-            "image"
-        )
+        fields = ("id", "name", "cargo_num", "place_in_cargo", "train_type", "image")
 
     def validate(self, attrs):
 
         if attrs["cargo_num"] <= 0:
-            raise serializers.ValidationError(
-                "Cargo num must be greater than zero."
-            )
+            raise serializers.ValidationError("Cargo num must be greater than zero.")
         if attrs["place_in_cargo"] <= 0:
             raise serializers.ValidationError(
                 "Place in cargo num must be greater than zero."
@@ -47,10 +47,7 @@ class TrainImageSerializer(serializers.ModelSerializer):
 
 
 class TrainListSerializer(TrainSerializer):
-    train_type = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field="name"
-    )
+    train_type = serializers.SlugRelatedField(read_only=True, slug_field="name")
 
 
 class TrainRetrieveSerializer(TrainSerializer):
@@ -61,24 +58,14 @@ class StationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Station
-        fields = (
-            "id",
-            "name",
-            "latitude",
-            "longitude"
-        )
+        fields = ("id", "name", "latitude", "longitude")
 
 
 class RouteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Route
-        fields = (
-            "id",
-            "source",
-            "destination",
-            "distance"
-        )
+        fields = ("id", "source", "destination", "distance")
 
     def validate(self, attrs):
         if attrs["source"] == attrs["destination"]:
@@ -86,30 +73,18 @@ class RouteSerializer(serializers.ModelSerializer):
                 "Source and destination stations must be different."
             )
         if attrs["distance"] <= 0:
-            raise serializers.ValidationError(
-                "Distance must be greater than zero."
-            )
+            raise serializers.ValidationError("Distance must be greater than zero.")
 
         return attrs
 
 
 class RouteListSerializer(serializers.ModelSerializer):
-    source = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field="name"
-    )
-    destination = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field="name"
-    )
+    source = serializers.SlugRelatedField(read_only=True, slug_field="name")
+    destination = serializers.SlugRelatedField(read_only=True, slug_field="name")
+
     class Meta:
         model = Route
-        fields = (
-            "id",
-            "source",
-            "destination",
-            "distance"
-        )
+        fields = ("id", "source", "destination", "distance")
 
 
 class RouteRetrieveSerializer(serializers.ModelSerializer):
@@ -126,7 +101,7 @@ class RouteRetrieveSerializer(serializers.ModelSerializer):
             "source_coordinates",
             "destination_name",
             "destination_coordinates",
-            "distance"
+            "distance",
         )
 
     def get_source_coordinates(self, obj):
@@ -149,45 +124,33 @@ class CrewSerializer(serializers.ModelSerializer):
 
 class JourneySerializer(serializers.ModelSerializer):
     crew = serializers.SlugRelatedField(
-        many=True,
-        queryset=Crew.objects.all(),
-        slug_field="full_name",
-        required=False
+        many=True, queryset=Crew.objects.all(), slug_field="full_name", required=False
     )
 
     class Meta:
         model = Journey
-        fields = (
-            "id",
-            "route",
-            "train",
-            "departure_time",
-            "arrival_time",
-            "crew"
-        )
+        fields = ("id", "route", "train", "departure_time", "arrival_time", "crew")
 
     def create(self, validated_data):
-        crew_data = validated_data.pop('crew', [])
+        crew_data = validated_data.pop("crew", [])
         journey = Journey.objects.create(**validated_data)
         journey.crew.set(crew_data)
         return journey
 
     def update(self, instance, validated_data):
-        crew_data = validated_data.pop('crew', None)
+        crew_data = validated_data.pop("crew", None)
         instance = super().update(instance, validated_data)
         if crew_data is not None:
             instance.crew.set(crew_data)
         return instance
 
 
-
 class JourneyListSerializer(JourneySerializer):
     route_source = serializers.CharField(source="route.source.name", read_only=True)
-    route_destination = serializers.CharField(source="route.destination.name", read_only=True)
-    train = serializers.SlugRelatedField(
-        read_only=True,
-        slug_field="name"
+    route_destination = serializers.CharField(
+        source="route.destination.name", read_only=True
     )
+    train = serializers.SlugRelatedField(read_only=True, slug_field="name")
     crew_count = serializers.IntegerField(source="crew.count", read_only=True)
 
     class Meta:
@@ -199,7 +162,7 @@ class JourneyListSerializer(JourneySerializer):
             "train",
             "departure_time",
             "arrival_time",
-            "crew_count"
+            "crew_count",
         )
 
 
@@ -207,44 +170,46 @@ class JourneyRetrieveSerializer(JourneySerializer):
     train = TrainRetrieveSerializer(many=False, read_only=True)
     route = RouteRetrieveSerializer(many=False, read_only=True)
     crew = serializers.SlugRelatedField(
-        many=True,
-        read_only=True,
-        slug_field="full_name"
+        many=True, read_only=True, slug_field="full_name"
     )
 
     class Meta:
         model = Journey
-        fields = (
-            "id",
-            "route",
-            "train",
-            "departure_time",
-            "arrival_time",
-            "crew"
-        )
+        fields = ("id", "route", "train", "departure_time", "arrival_time", "crew")
 
 
 class TicketSerializer(serializers.ModelSerializer):
+    source = serializers.CharField(source="journey.route.source.name", read_only=True)
+    destination = serializers.CharField(
+        source="journey.route.destination.name", read_only=True
+    )
+    journey = serializers.PrimaryKeyRelatedField(queryset=Journey.objects.all())
 
     class Meta:
         model = Ticket
-        fields = ("id","cargo", "seat", "journey")
+        fields = ("id", "cargo", "seat", "journey", "source", "destination")
 
     def validate(self, attrs):
+        journey = attrs.get("journey")
+        if not journey:
+            raise serializers.ValidationError("Journey is required")
+
         Ticket.validate_seat(
             attrs["seat"],
-            attrs["journey"].train.place_in_cargo,
-            serializers.ValidationError
+            journey.train.place_in_cargo,
+            serializers.ValidationError,
         )
         Ticket.validate_cargo(
             attrs["cargo"],
-            attrs['journey'].train.cargo_num,
-            serializers.ValidationError
+            journey.train.cargo_num,
+            serializers.ValidationError,
         )
+        return attrs
 
 
 class OrderSerializer(serializers.ModelSerializer):
     tickets = TicketSerializer(many=True, read_only=False, allow_empty=False)
+
     class Meta:
         model = Order
         fields = ("id", "created_at", "tickets")
