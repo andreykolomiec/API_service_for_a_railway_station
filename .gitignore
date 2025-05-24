@@ -3,29 +3,44 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# C extensions
+*.so
+
 # Virtual environment
 venv/
 ENV/
 env/
+.venv/
 
-# Django migrations except __init__.py
-**/migrations/
-!**/migrations/__init__.py
+# Django migrations (ignore only bytecode, not .py files)
+**/migrations/__pycache__/
+**/migrations/*.py[cod]
+
+!**/migrations/*.py
 
 # Database
 db.sqlite3
+*.sqlite3
 
 # Media & Static files
 /media/
 staticfiles/
 *.log
 
-# PyCharm project settings (optional: ignore all .idea/)
+# Local env files
+.env
+*.env
+
+# PyCharm project files
 .idea/
 
-# VSCode settings
+# VS Code settings
 .vscode/
 
-# OS-generated files
+# macOS / Windows system files
 .DS_Store
 Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose.yml
